@@ -1,18 +1,60 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useI18n } from "../i18n/I18nContext.jsx";
 
 const socialHover = { scale: 1.08, backgroundColor: "rgba(255,255,255,0.15)" };
 
+/**
+ * Duwt de 10seat “Book here”-bubble omhoog wanneer de footer in beeld is,
+ * zodat die niet over de footer (Facebook, Instagram, …) ligt.
+ */
+function useBookingBubbleClearsFooter() {
+  useEffect(() => {
+    const footer = document.getElementById("site-footer");
+    if (!footer) return;
+
+    let raf = 0;
+    const updateLift = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const r = footer.getBoundingClientRect();
+        const vh = window.innerHeight;
+        if (r.top >= vh || r.bottom <= 0) {
+          document.documentElement.style.removeProperty("--booking-footer-lift");
+          return;
+        }
+        const raw = vh - r.top + 32;
+        const lift = Math.min(Math.round(raw), Math.round(vh * 0.5));
+        document.documentElement.style.setProperty("--booking-footer-lift", `${lift}px`);
+      });
+    };
+
+    updateLift();
+    window.addEventListener("scroll", updateLift, { passive: true });
+    window.addEventListener("resize", updateLift);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", updateLift);
+      window.removeEventListener("resize", updateLift);
+      document.documentElement.style.removeProperty("--booking-footer-lift");
+    };
+  }, []);
+}
+
 export default function Footer() {
+  const { t } = useI18n();
+  useBookingBubbleClearsFooter();
+
   return (
-    <footer className="site-footer">
+    <footer id="site-footer" className="site-footer">
       <div className="footer-inner">
         <div>
           <span className="footer-brand">nesto</span>
-          <p className="footer-copy">© 2026 nesto – belamavo bv – 1027927.212</p>
+          <p className="footer-copy">{t("footer.copy")}</p>
         </div>
         <div className="footer-nav">
-          <Link to="/menu">Menu</Link>
+          <Link to="/menu">{t("footer.menu")}</Link>
           <div className="socials">
             <motion.a
               href="https://www.facebook.com/profile.php?id=61582396942827"

@@ -9,7 +9,8 @@
   --color-sand: #e8e2d9;
   --color-footer: #1a2420;
   --color-footer-text: #c4bcb4;
-  --font-display: "Fraunces", Georgia, serif;
+  /* Eén lettertype voor de hele site */
+  --font-display: "Source Sans 3", system-ui, sans-serif;
   --font-body: "Source Sans 3", system-ui, sans-serif;
   --radius-lg: 20px;
   --radius-md: 12px;
@@ -28,11 +29,12 @@
 html {
   scroll-behavior: smooth;
   height: 100%;
+  font-family: var(--font-body);
 }
 
 body {
   margin: 0;
-  min-height: 100vh;
+  min-height: 100%;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -44,33 +46,73 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
 /* Vul de viewport; externe scripts na #root nemen geen lay-outruimte in */
 body > script {
   display: none;
 }
 
+/*
+ * 10seat booking.js voegt o.a. [id="10seat-booking"] toe als sibling van #root.
+ * In bubble-mode neemt die div toch honderden px hoogte in de flex-kolom van body,
+ * waardoor er lege ruimte onder de footer ontstaat. Uit de flow halen.
+ */
+[id="10seat-booking"] {
+  position: fixed !important;
+  right: max(0.75rem, env(safe-area-inset-right));
+  /* Basis + dynamische lift (Footer.jsx) zodat de bubble niet over de footer ligt */
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem + var(--booking-footer-lift, 0px));
+  left: auto;
+  top: auto;
+  width: 0 !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  overflow: visible !important;
+  /* Onder sticky header (100), boven normale inhoud; niet over footer dankzij --booking-footer-lift */
+  z-index: 60;
+  pointer-events: none;
+  transition: bottom 0.22s var(--ease);
+}
+
+[id="10seat-booking"] * {
+  pointer-events: auto;
+}
+
+/* Sticky footer: vul minstens de viewport; main groeit, footer onderaan */
 #root {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  min-height: 0;
   width: 100%;
+  min-height: 100%;
+  min-height: 100dvh;
 }
 
 .app-root {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  min-height: 0;
   width: 100%;
+  min-height: 100%;
+  min-height: 100dvh;
 }
 
 .main-fill {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  min-height: 0;
   width: 100%;
+  min-height: 0;
   padding-bottom: 0;
 }
 
@@ -78,8 +120,8 @@ body > script {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  min-height: 0;
   width: 100%;
+  min-height: 0;
 }
 
 img {
@@ -128,6 +170,59 @@ a {
   justify-content: space-between;
   gap: 1rem;
   min-height: var(--header-h);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(28, 25, 23, 0.12);
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.lang-switch--mobile {
+  margin-top: 0.75rem;
+  width: fit-content;
+}
+
+.lang-switch__btn {
+  margin: 0;
+  padding: 0.35rem 0.55rem;
+  border: none;
+  background: transparent;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition:
+    background 0.2s var(--ease),
+    color 0.2s;
+}
+
+.lang-switch__btn:hover {
+  background: var(--color-sand);
+  color: var(--color-ink);
+}
+
+.lang-switch__btn.is-active {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.workshop-subtitle {
+  font-family: inherit;
+  font-size: clamp(1.35rem, 2.2vw, 1.65rem);
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0 0 1rem;
 }
 
 .logo-link img {
@@ -210,6 +305,10 @@ a {
 
 @media (max-width: 768px) {
   .nav-desktop {
+    display: none;
+  }
+
+  .header-actions .lang-switch:not(.lang-switch--mobile) {
     display: none;
   }
 
@@ -341,6 +440,78 @@ a {
 
 .section--tint {
   background: linear-gradient(180deg, #f3efe8 0%, var(--color-bg) 100%);
+}
+
+.section--compact {
+  padding-top: clamp(2rem, 4vw, 3rem);
+  padding-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.home-kids-lead {
+  font-family: inherit;
+  font-size: clamp(1.15rem, 2.2vw, 1.4rem);
+  font-weight: 600;
+  font-style: italic;
+  color: var(--color-accent);
+  margin: 0 0 1rem;
+}
+
+.home-food-mosaic {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.home-food-mosaic figure {
+  margin: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+}
+
+.home-food-mosaic img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 560px) {
+  .home-food-mosaic {
+    grid-template-columns: 1fr;
+  }
+}
+
+.menu-food-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.menu-food-strip figure {
+  margin: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+}
+
+.menu-food-strip img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 560px) {
+  .menu-food-strip {
+    grid-template-columns: 1fr;
+  }
 }
 
 .section-kicker {
@@ -661,6 +832,8 @@ a {
 
 /* Footer — geen extra ruimte onderaan pagina */
 .site-footer {
+  position: relative;
+  z-index: 70;
   flex-shrink: 0;
   background: var(--color-footer);
   color: var(--color-footer-text);

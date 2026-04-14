@@ -1,164 +1,166 @@
 import { useCallback } from "react";
 import { motion } from "framer-motion";
+import { useI18n } from "../i18n/I18nContext.jsx";
 
 export default function Workshops() {
-  const onSubmit = useCallback((e) => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const body =
-      "Kids Craft & Brunch — reservatieaanvraag\r\n\r\n" +
-      "Naam: " +
-      (fd.get("your-name") || "") +
-      "\r\n" +
-      "E-mail: " +
-      (fd.get("your-email") || "") +
-      "\r\n" +
-      "Telefoon: " +
-      (fd.get("your-phone") || "") +
-      "\r\n" +
-      "Gekozen slot: " +
-      (fd.get("Date") || "") +
-      "\r\n" +
-      "Aantal volwassenen: " +
-      (fd.get("booking-persons") || "") +
-      "\r\n" +
-      "Aantal kinderen: " +
-      (fd.get("booking-kids") || "") +
-      "\r\n\r\n" +
-      "Bericht / opmerkingen:\r\n" +
-      (fd.get("your-message") || "");
-    window.location.href =
-      "mailto:info@nestogent.be?subject=" +
-      encodeURIComponent("Workshop booking — nesto") +
-      "&body=" +
-      encodeURIComponent(body);
-  }, []);
+  const { t } = useI18n();
+
+  const onSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const slotKey = fd.get("Date");
+      const slotLabel = slotKey === "2" ? t("workshops.slot2") : t("workshops.slot1");
+      const body =
+        t("workshops.mailIntro") +
+        "\r\n\r\n" +
+        t("workshops.mailName") +
+        ": " +
+        (fd.get("your-name") || "") +
+        "\r\n" +
+        t("workshops.mailEmail") +
+        ": " +
+        (fd.get("your-email") || "") +
+        "\r\n" +
+        t("workshops.mailPhone") +
+        ": " +
+        (fd.get("your-phone") || "") +
+        "\r\n" +
+        t("workshops.mailSlot") +
+        ": " +
+        slotLabel +
+        "\r\n" +
+        t("workshops.mailAdults") +
+        ": " +
+        (fd.get("booking-persons") || "") +
+        "\r\n" +
+        t("workshops.mailKids") +
+        ": " +
+        (fd.get("booking-kids") || "") +
+        "\r\n\r\n" +
+        t("workshops.mailMsg") +
+        ":\r\n" +
+        (fd.get("your-message") || "");
+      window.location.href =
+        "mailto:info@nestogent.be?subject=" + encodeURIComponent(t("workshops.mailSubject")) + "&body=" + encodeURIComponent(body);
+    },
+    [t]
+  );
 
   return (
     <section className="section page-top">
       <div className="wrap">
         <motion.p className="section-kicker" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-          Quality time
+          {t("workshops.kicker")}
         </motion.p>
         <motion.h1 className="section-title" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-          Kids Craft &amp; Brunch
+          {t("workshops.title")}
         </motion.h1>
 
         <div className="split" style={{ marginBottom: "2.5rem" }}>
           <motion.div className="split__visual" initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
             <motion.div className="card-image" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 280, damping: 20 }}>
-              <img src="https://nestogent.be/wp-content/uploads/2025/11/jt-2.png" alt="Kinderen aan het knutselen bij nesto" width="600" height="400" />
+              <img src="https://nestogent.be/wp-content/uploads/2025/11/jt-2.png" alt={t("workshops.imgCraftAlt")} width="600" height="400" />
             </motion.div>
           </motion.div>
           <motion.div className="prose" initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-            <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.65rem", marginTop: 0 }}>Creative fun for kids, a relaxed moment for parents.</h2>
-            <p>
-              Looking for a fun and meaningful afternoon activity? At nesto, we pair a guided creative workshop for kids with a calm, cosy moment for parents.
-            </p>
-            <p>
-              While your little creators dive into colours, paint, glitter and imagination, you can slow down and enjoy a breakfast, brunch, coffee, tea or sweet
-              treats in a relaxed atmosphere. A perfect balance of creativity for them and downtime for you.
-            </p>
+            <h2 className="workshop-subtitle">{t("workshops.introTitle")}</h2>
+            <p>{t("workshops.introP1")}</p>
+            <p>{t("workshops.introP2")}</p>
           </motion.div>
         </div>
 
         <div className="split split--reverse" style={{ marginBottom: "2.5rem" }}>
           <motion.div className="prose" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <div className="workshop-block" style={{ marginBottom: 0 }}>
-              <h3>How it works</h3>
+              <h3>{t("workshops.howTitle")}</h3>
               <p>
-                <strong>A creative workshop for kids</strong>
+                <strong>{t("workshops.howWTitle")}</strong>
                 <br />
-                Our craft sessions are led by a friendly and experienced host who guides kids from <strong>4 to 9 years old</strong> through a fun activity they can
-                take home.
+                {t("workshops.howWText")}
               </p>
               <p>
-                <strong>Price: €18 per child</strong>
+                <strong>{t("workshops.howPriceTitle")}</strong>
                 <br />
-                Includes craft materials + waffle + drink (Apple Juice or Fristi).
+                {t("workshops.howPriceText")}
               </p>
               <p>
-                <strong>Relaxed time for parents</strong>
+                <strong>{t("workshops.howParentsTitle")}</strong>
                 <br />
-                Enjoy a lunch or brunch in our cosy interior while the kids craft away in a dedicated creative space.
+                {t("workshops.howParentsText")}
               </p>
               <p>
-                <strong>Duration</strong>
+                <strong>{t("workshops.howDurationTitle")}</strong>
                 <br />
-                The workshop lasts 1 hour.
+                {t("workshops.howDurationText")}
               </p>
               <p>
-                <strong>Dates</strong>
+                <strong>{t("workshops.howDatesTitle")}</strong>
                 <br />
-                The craft workshops take place on selected Saturdays &amp; Sundays.
+                {t("workshops.howDatesText")}
               </p>
               <ul>
-                <li>Sunday 19 April 2026: 09:00 – 10:00</li>
-                <li>Sunday 19 April 2026: 10:30 – 11:30</li>
+                <li>{t("workshops.slot1")}</li>
+                <li>{t("workshops.slot2")}</li>
               </ul>
             </div>
           </motion.div>
           <motion.div className="split__visual" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.06 }}>
             <motion.div className="card-image" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 280, damping: 20 }}>
-              <img src="https://nestogent.be/wp-content/uploads/2025/11/jt-3.png" alt="Workshop sfeer bij nesto" width="600" height="400" />
+              <img src="https://nestogent.be/wp-content/uploads/2025/11/jt-3.png" alt={t("workshops.imgMoodAlt")} width="600" height="400" />
             </motion.div>
           </motion.div>
         </div>
 
         <div className="split">
           <motion.div className="prose" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.65rem" }}>Book your spot</h2>
-            <p>Because places are limited, booking is required.</p>
-            <p>
-              Reserve your child&apos;s workshop spot and your table at the same time using the form. Fill in your details, pick a date, and mention how many kids
-              &amp; adults you want to register. We&apos;ll confirm your reservation via email.
-            </p>
-            <p className="form-note">
-              Dit formulier opent je mailapp met een vooraf ingevulde e-mail naar info@nestogent.be. Voor tafelreservaties kun je ook de groene booking-knop gebruiken.
-            </p>
+            <h2 className="workshop-subtitle">{t("workshops.bookTitle")}</h2>
+            <p>{t("workshops.bookP1")}</p>
+            <p>{t("workshops.bookP2")}</p>
+            <p className="form-note">{t("workshops.bookNote")}</p>
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.08 }}>
             <div className="workshop-block">
               <form className="booking-form" onSubmit={onSubmit}>
                 <div className="form-row">
                   <div className="form-field">
-                    <label htmlFor="your-name">Your full name</label>
+                    <label htmlFor="your-name">{t("workshops.formName")}</label>
                     <input id="your-name" name="your-name" type="text" required autoComplete="name" />
                   </div>
                   <div className="form-field">
-                    <label htmlFor="your-email">Your e-mail</label>
+                    <label htmlFor="your-email">{t("workshops.formEmail")}</label>
                     <input id="your-email" name="your-email" type="email" required autoComplete="email" />
                   </div>
                 </div>
                 <div className="form-row">
                   <div className="form-field">
-                    <label htmlFor="your-phone">Your phone number</label>
+                    <label htmlFor="your-phone">{t("workshops.formPhone")}</label>
                     <input id="your-phone" name="your-phone" type="tel" required placeholder="+32 …" autoComplete="tel" />
                   </div>
                   <div className="form-field">
-                    <label htmlFor="Date">Choose a date and workshop</label>
+                    <label htmlFor="Date">{t("workshops.formSlot")}</label>
                     <select id="Date" name="Date" required>
-                      <option value="Sunday 19 April 2026, 09:00 - 10:00">Sunday 19 April 2026, 09:00 – 10:00</option>
-                      <option value="Sunday 19 April 2026, 10:30 - 11:30">Sunday 19 April 2026, 10:30 – 11:30</option>
+                      <option value="1">{t("workshops.slot1")}</option>
+                      <option value="2">{t("workshops.slot2")}</option>
                     </select>
                   </div>
                 </div>
                 <div className="form-row">
                   <div className="form-field">
-                    <label htmlFor="booking-persons">Number of adults</label>
+                    <label htmlFor="booking-persons">{t("workshops.formAdults")}</label>
                     <input id="booking-persons" name="booking-persons" type="number" min="1" max="12" required placeholder="2" />
                   </div>
                   <div className="form-field">
-                    <label htmlFor="booking-kids">Number of kids</label>
+                    <label htmlFor="booking-kids">{t("workshops.formKids")}</label>
                     <input id="booking-kids" name="booking-kids" type="number" min="1" max="8" required placeholder="2" />
                   </div>
                 </div>
                 <div className="form-field">
-                  <label htmlFor="your-message">Message / special request (optional)</label>
-                  <textarea id="your-message" name="your-message" maxLength={2000} placeholder="Allergies, other requests, …" />
+                  <label htmlFor="your-message">{t("workshops.formMessage")}</label>
+                  <textarea id="your-message" name="your-message" maxLength={2000} placeholder={t("workshops.formMessagePh")} />
                 </div>
                 <motion.button type="submit" className="btn btn--primary" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  Request your spot
+                  {t("workshops.formSubmit")}
                 </motion.button>
               </form>
             </div>
